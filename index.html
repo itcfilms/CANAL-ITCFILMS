@@ -56,7 +56,11 @@
   <div class="video-list" id="listaVideos"></div>
 
   <script>
-    let videos = [];
+    let videos = JSON.parse(localStorage.getItem("videosITC")) || [];
+
+    function salvarLocal() {
+      localStorage.setItem("videosITC", JSON.stringify(videos));
+    }
 
     function adicionarVideo() {
       const titulo = document.getElementById('titulo').value;
@@ -66,6 +70,7 @@
       if (!titulo || !link) return alert("Preencha todos os campos.");
 
       videos.push({ titulo, link, tipo });
+      salvarLocal();
       document.getElementById('titulo').value = '';
       document.getElementById('link').value = '';
       atualizarLista();
@@ -102,6 +107,9 @@
       link.click();
       document.body.removeChild(link);
     }
+
+    // Inicializar lista ao carregar a página
+    atualizarLista();
   </script>
 
   <!-- Fonte futurista -->
