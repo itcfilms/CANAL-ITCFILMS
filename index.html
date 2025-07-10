@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base de Vídeos - ITC FILMS</title>
+  <style>
+    body {
+      background: #0d0d0d;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffe7;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      color: #ff00ff;
+      text-shadow: 0 0 5px #ff00ff;
+    }
+    input, button, select {
+      background: #1a1a1a;
+      color: #00ffe7;
+      border: 1px solid #00ffe7;
+      padding: 0.5rem;
+      margin: 0.3rem;
+    }
+    .video-list {
+      margin-top: 1rem;
+    }
+    .video-item {
+      border: 1px solid #00ffe7;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .ref {
+      border-color: #ff00ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎥 Base de Vídeos - ITC FILMS</h1>
+
+  <h3>Adicionar Vídeo</h3>
+  <input type="text" id="titulo" placeholder="Título do vídeo" />
+  <input type="text" id="link" placeholder="Link do vídeo" />
+  <select id="tipo">
+    <option value="publicado">Publicado</option>
+    <option value="referencia">Referência</option>
+  </select>
+  <button onclick="adicionarVideo()">Adicionar</button>
+
+  <h3>🔍 Pesquisar</h3>
+  <input type="text" id="pesquisa" placeholder="Buscar título..." oninput="filtrarVideos()" />
+
+  <button onclick="exportarPlanilha()">📥 Exportar para Excel</button>
+
+  <div class="video-list" id="listaVideos"></div>
+
+  <script>
+    let videos = [];
+
+    function adicionarVideo() {
+      const titulo = document.getElementById('titulo').value;
+      const link = document.getElementById('link').value;
+      const tipo = document.getElementById('tipo').value;
+
+      if (!titulo || !link) return alert("Preencha todos os campos.");
+
+      videos.push({ titulo, link, tipo });
+      document.getElementById('titulo').value = '';
+      document.getElementById('link').value = '';
+      atualizarLista();
+    }
+
+    function atualizarLista(filtro = '') {
+      const container = document.getElementById('listaVideos');
+      container.innerHTML = '';
+      videos.filter(v => v.titulo.toLowerCase().includes(filtro.toLowerCase())).forEach(video => {
+        const div = document.createElement('div');
+        div.className = 'video-item' + (video.tipo === 'referencia' ? ' ref' : '');
+        div.innerHTML = `<strong>${video.tipo === 'referencia' ? '🎯 Ref' : '✅ Pub'}</strong>: <a href="${video.link}" target="_blank">${video.titulo}</a>`;
+        container.appendChild(div);
+      });
+    }
+
+    function filtrarVideos() {
+      const termo = document.getElementById('pesquisa').value;
+      atualizarLista(termo);
+    }
+
+    function exportarPlanilha() {
+      let csvContent = "data:text/csv;charset=utf-8,Título,Link,Tipo\n";
+      videos.forEach(video => {
+        let linha = `"${video.titulo}","${video.link}","${video.tipo}"`;
+        csvContent += linha + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "videos_itcfilms.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+
+  <!-- Fonte futurista -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</body>
+</html>
